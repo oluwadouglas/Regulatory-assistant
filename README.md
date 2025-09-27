@@ -1,148 +1,141 @@
-# Regulatory Report Assistant
+Regulatory Report Assistant
 
-A full-stack application for processing and analyzing medical adverse event reports. The application uses natural language processing to extract structured information from unstructured medical reports and provides a user-friendly interface for viewing and analyzing the data.
+This is a simple full-stack project that processes medical adverse event reports. The backend is built with FastAPI and uses spaCy + some rule-based logic to extract structured information from text. The frontend is built with React, where users can paste a report, process it, and view results.
 
-## Features
+What it does
 
-- **Report Processing**: Submit unstructured medical reports and extract structured information including:
-  - Drug names
-  - Adverse events
-  - Severity levels
-  - Patient outcomes
-- **Translation**: Translate outcomes to French or Swahili
-- **Analytics Dashboard**: View charts and statistics about reported adverse events
-- **Report History**: Browse and search through previously processed reports
-- **Responsive Design**: Works on desktop and mobile devices
+Take free-text medical reports
 
-## Tech Stack
+Extract basic fields like:
 
-### Backend
-- Python 3.8+
-- FastAPI
-- SQLAlchemy (SQLite)
-- spaCy for NLP
-- Uvicorn ASGI server
+Drug name
 
-### Frontend
-- React 18
-- Material-UI (MUI) for UI components
-- Recharts for data visualization
-- Axios for API requests
+Adverse events
 
-## Setup Instructions
+Severity (mild/moderate/severe)
 
-### Prerequisites
+Outcome (recovered/fatal/ongoing)
 
-- Python 3.8 or higher
-- Node.js 16+ and npm
-- Git
+Save reports to a database (SQLite)
 
-### Backend Setup
+Fetch history of past reports
 
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
+Translate outcomes into French or Swahili (basic dictionary-based)
 
-2. Create and activate a virtual environment (recommended):
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+Stack used
 
-3. Install Python dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
+Backend
 
-4. Download the spaCy English language model:
-   ```bash
-   python -m spacy download en_core_web_sm
-   ```
+Python 3.8+
 
-5. Start the backend server:
-   ```bash
-   uvicorn main:app --reload --host 0.0.0.0 --port 5000
-   ```
+FastAPI
 
-   The API will be available at `http://localhost:5000`
-   API documentation (Swagger UI) will be available at `http://localhost:5000/docs`
+SQLAlchemy (SQLite DB)
 
-### Frontend Setup
+spaCy (NLP)
 
-1. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
+Uvicorn
 
-2. Install Node.js dependencies:
-   ```bash
-   npm install
-   ```
+Frontend
 
-3. Start the development server:
-   ```bash
-   npm start
-   ```
+React
 
-   The frontend will be available at `http://localhost:3000`
+Fetch/Axios for API calls
 
-## API Endpoints
+Optionally Material-UI/Recharts for UI + charts
 
-- `POST /process-report`: Process a new medical report
-- `GET /reports`: Get all processed reports
-- `POST /translate`: Translate text to French or Swahili
+How to run locally
+Backend setup
 
-## Project Structure
+Go to the backend folder:
 
-```
+cd backend
+
+
+Create a virtual environment and activate it:
+
+python -m venv venv
+source venv/bin/activate   # Windows: venv\Scripts\activate
+
+
+Install dependencies:
+
+pip install -r requirements.txt
+
+
+If no requirements.txt, just install manually:
+
+pip install fastapi uvicorn sqlalchemy pydantic spacy
+
+
+Download the spaCy English model:
+
+python -m spacy download en_core_web_sm
+
+
+Run the server:
+
+uvicorn main:app --reload --port 8000
+
+
+The API is now at http://127.0.0.1:8000
+Docs: http://127.0.0.1:8000/docs
+
+Frontend setup
+
+Go to the frontend folder:
+
+cd frontend
+
+
+Install dependencies:
+
+npm install
+
+
+Start the React dev server:
+
+npm start
+
+
+The app should open on http://localhost:3000.
+
+API routes
+
+POST /process-report → Process a report and return structured fields
+
+GET /reports → Get all saved reports
+
+POST /translate → Translate outcome into French or Swahili
+
+Folder layout
 regulatory-assistant/
 ├── backend/
-│   ├── main.py           # FastAPI application
-│   ├── requirements.txt   # Python dependencies
-│   └── reports.db        # SQLite database (created on first run)
+│   ├── main.py
+│   ├── requirements.txt
+│   └── reports.db
 └── frontend/
-    ├── public/           # Static files
     ├── src/
-    │   ├── App.js        # Main React component
-    │   └── ...           # Other React components
-    ├── package.json      # Node.js dependencies
-    └── ...
-```
+    │   └── App.js
+    └── package.json
 
-## Deployment
+Deployment notes
 
-### Backend
+Backend: can be deployed with Uvicorn/Gunicorn + Nginx. For DB, SQLite works locally, but for production use PostgreSQL.
 
-For production deployment, consider using:
-- Gunicorn with Uvicorn workers
-- Nginx as a reverse proxy
-- Environment variables for configuration
-- A production-grade database like PostgreSQL
+Frontend: build with npm run build and host on Vercel, Netlify, or any static host.
 
-### Frontend
+Example request
+curl -X POST http://127.0.0.1:8000/process-report \
+-H "Content-Type: application/json" \
+-d '{"report": "Patient experienced severe nausea after taking Drug X. Patient recovered."}'
 
-Build the production version:
-```bash
-cd frontend
-npm run build
-```
 
-Serve the built files using a static file server like Nginx or deploy to a platform like Vercel or Netlify.
+Response:
 
-## License
-
-MIT
-
-## Screenshots
-
-![Screenshot 1](screenshots/screenshot1.png)
-![Screenshot 2](screenshots/screenshot2.png)
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a new Pull Request
+{
+  "drug": "Drug X",
+  "adverse_events": ["nausea"],
+  "severity": "severe",
+  "outcome": "recovered"
+}
